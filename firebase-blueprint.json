@@ -1,0 +1,24 @@
+{
+  "entities": {
+    "historyItem": {
+      "title": "HistoryItem",
+      "description": "An analysis history item.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "idea": { "type": "string" },
+        "data": { "type": "object" },
+        "sources": { "type": "array" },
+        "date": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "idea", "data", "date"]
+    }
+  },
+  "firestore": {
+    "/history/{historyId}": {
+      "schema": { "$ref": "#/entities/historyItem" },
+      "description": "Analysis history documents for a user."
+    }
+  }
+}

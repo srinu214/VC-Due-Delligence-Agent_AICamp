@@ -1,0 +1,6 @@
+{
+  "name": "VC Due Diligence & Market Research Agent",
+  "description": "An AI agent that helps entrepreneurs validate business ideas and investors perform quick due diligence using Gemini 1.5 Pro and Google Search Grounding.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
