@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Loader2, Search, Zap, AlertCircle, Download, Copy, Sparkles, Clock, CheckCircle2, ChevronRight, LogIn, LogOut, Trash2 } from 'lucide-react';
+import { Loader2, Search, Zap, AlertCircle, Download, Copy, Sparkles, Clock, CheckCircle2, ChevronRight, LogIn, LogOut, Trash2, MessageSquare } from 'lucide-react';
 import Markdown from 'react-markdown';
 import { motion, AnimatePresence } from 'motion/react';
 import { v4 as uuidv4 } from 'uuid';
@@ -24,11 +24,24 @@ interface ScorecardData {
   summary: string;
 }
 
+interface SentimentData {
+  overallScore: number;
+  trend: 'Improving' | 'Declining' | 'Stable';
+  breakdown: {
+    news: number;
+    social: number;
+    expert: number;
+  };
+  keyDrivers: string[];
+  summary: string;
+}
+
 interface AnalysisData {
   concept: string;
   validation: string;
   competitors: string;
   scorecard: ScorecardData;
+  sentiment?: SentimentData;
 }
 
 interface HistoryItem {
@@ -571,6 +584,104 @@ export default function App() {
 
                   </div>
                 </motion.div>
+
+                {/* Market Sentiment */}
+                {result.sentiment && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
+                  >
+                    <div className="border-b border-slate-100 p-4 bg-slate-900 text-white">
+                      <h3 className="font-bold flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-blue-400" />
+                        Market Sentiment Analysis
+                      </h3>
+                    </div>
+                    <div className="p-5 space-y-5">
+                      
+                      {/* Overall Score */}
+                      <div>
+                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2">Overall Score</div>
+                        <div className="flex items-center gap-4">
+                          <div className={`text-3xl font-black ${
+                            result.sentiment.overallScore >= 0.5 ? 'text-emerald-600' :
+                            result.sentiment.overallScore <= -0.5 ? 'text-red-600' :
+                            'text-slate-600'
+                          }`}>
+                            {result.sentiment.overallScore > 0 ? '+' : ''}{result.sentiment.overallScore.toFixed(2)}
+                          </div>
+                          <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                            result.sentiment.overallScore >= 0.5 ? 'bg-emerald-100 text-emerald-800' :
+                            result.sentiment.overallScore <= -0.5 ? 'bg-red-100 text-red-800' :
+                            'bg-slate-100 text-slate-800'
+                          }`}>
+                            {result.sentiment.overallScore >= 0.5 ? 'BULLISH' : result.sentiment.overallScore <= -0.5 ? 'BEARISH' : 'NEUTRAL'}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Trend */}
+                      <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                        <span className="text-xs font-bold text-slate-500 uppercase">Trend</span>
+                        <span className="text-sm font-bold flex items-center gap-1 text-slate-800">
+                          {result.sentiment.trend === 'Improving' ? '📈' : result.sentiment.trend === 'Declining' ? '📉' : '↔️'} {result.sentiment.trend}
+                        </span>
+                      </div>
+
+                      {/* Breakdown */}
+                      <div className="space-y-3">
+                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Breakdown</div>
+                        
+                        <div className="space-y-2">
+                          {[
+                            { label: 'News', score: result.sentiment.breakdown.news },
+                            { label: 'Social', score: result.sentiment.breakdown.social },
+                            { label: 'Expert', score: result.sentiment.breakdown.expert }
+                          ].map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-3">
+                              <span className="text-xs font-medium text-slate-600 w-12">{item.label}</span>
+                              <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                <motion.div 
+                                  initial={{ width: 0 }}
+                                  animate={{ width: `${Math.abs(item.score) * 100}%` }}
+                                  transition={{ duration: 1, ease: "easeOut" }}
+                                  className={`h-full ${item.score >= 0 ? 'bg-emerald-500' : 'bg-red-500'}`}
+                                />
+                              </div>
+                              <span className={`text-xs font-bold w-10 text-right ${
+                                item.score > 0 ? 'text-emerald-600' : item.score < 0 ? 'text-red-600' : 'text-slate-500'
+                              }`}>
+                                {item.score > 0 ? '+' : ''}{item.score.toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Key Drivers */}
+                      <div className="pt-2">
+                        <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-2">Key Drivers</div>
+                        <ul className="space-y-2 text-sm text-slate-700">
+                          {result.sentiment.keyDrivers.map((driver, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" />
+                              <span className="leading-tight">{driver}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      <Separator />
+                      
+                      <p className="text-xs text-slate-500 italic">
+                        {result.sentiment.summary}
+                      </p>
+
+                    </div>
+                  </motion.div>
+                )}
 
                 {/* Grounding Sources */}
                 {sources.length > 0 && (

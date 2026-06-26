@@ -45,6 +45,13 @@ async function startServer() {
         - Assess market timing (Early / Perfect Wave / Overcrowded)
         - Identify the biggest risk factor
 
+        Additionally, perform a Market Sentiment Analysis:
+        - Scan recent news, social media (Reddit, Twitter/X, LinkedIn), and industry forums.
+        - Generate a sentiment score between -1 (extremely negative) and +1 (extremely positive).
+        - Break down sentiment by Media/News, Social Media, and Expert/Industry.
+        - Identify the trend (Improving, Declining, Stable).
+        - List the top 3 drivers for this sentiment.
+
         Output MUST be ONLY a raw, strictly valid JSON object without any markdown block formatting like \`\`\`json. 
         It must exactly match this JSON structure:
         {
@@ -57,6 +64,17 @@ async function startServer() {
             "timing": "Market timing assessment (e.g., Early, Perfect Wave, Overcrowded)",
             "risk": "Critical risk factor",
             "summary": "A short VC candid take / summary"
+          },
+          "sentiment": {
+            "overallScore": "number between -1 and 1",
+            "trend": "Improving | Declining | Stable",
+            "breakdown": {
+              "news": "number between -1 and 1",
+              "social": "number between -1 and 1",
+              "expert": "number between -1 and 1"
+            },
+            "keyDrivers": ["Driver 1", "Driver 2", "Driver 3"],
+            "summary": "1-2 sentence overview of sentiment"
           }
         }
       `;
